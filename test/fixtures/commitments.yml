@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  commitmentdesc: MyString
+  commitmentamount: 9.99
+  occurancedate: 2022-12-20
+  expirationdate: 2022-12-20
+
+two:
+  commitmentdesc: MyString
+  commitmentamount: 9.99
+  occurancedate: 2022-12-20
+  expirationdate: 2022-12-20
