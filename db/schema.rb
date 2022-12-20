@@ -10,12 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_20_155220) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_20_163546) do
   create_table "bills", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.decimal "amount", precision: 10
-    t.string "ispaid", limit: 3
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "ispaid", default: false
+    t.bigint "user_id", null: false
+    t.bigint "commitment_id", null: false
+    t.index ["commitment_id"], name: "index_bills_on_commitment_id"
+    t.index ["user_id"], name: "index_bills_on_user_id"
   end
 
   create_table "commitments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -25,6 +29,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_20_155220) do
     t.date "expirationdate"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_commitments_on_user_id"
   end
 
   create_table "groupinfos", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -36,6 +42,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_20_155220) do
   create_table "usergroups", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.bigint "groupinfo_id", null: false
+    t.index ["groupinfo_id"], name: "index_usergroups_on_groupinfo_id"
+    t.index ["user_id"], name: "index_usergroups_on_user_id"
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -48,4 +58,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_20_155220) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "bills", "commitments"
+  add_foreign_key "bills", "users"
+  add_foreign_key "commitments", "users"
+  add_foreign_key "usergroups", "groupinfos"
+  add_foreign_key "usergroups", "users"
 end
