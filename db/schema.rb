@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_28_203730) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_28_222500) do
   create_table "bills", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.decimal "amount", precision: 10
     t.datetime "created_at", null: false
@@ -52,7 +52,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_28_203730) do
     t.string "firstname", limit: 32
     t.string "lastname", limit: 32
     t.string "login", null: false
-    t.string "password", null: false
+    t.string "password_digest", null: false
     t.string "mail", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
