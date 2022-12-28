@@ -25,6 +25,17 @@ class UsersController < ApplicationController
     end
   end
 
+  def login
+    @user = User.find_by(login: user_params[:login])
+
+    if @user && @user.authenticate(user_params[:password])
+      token = encode_token({ user_id: @user.id })
+      render json: { user: @user, token: token }, status: :ok
+    else
+      render json: { error: 'Invalid username or password or mail' }, status: :unprocessable_entity
+    end
+  end
+
   # PATCH/PUT /users/1
   def update
     if @user.update(user_params)
