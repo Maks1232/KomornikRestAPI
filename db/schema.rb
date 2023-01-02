@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_28_222500) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_02_165243) do
   create_table "bills", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.decimal "amount", precision: 10
     t.datetime "created_at", null: false
@@ -42,10 +42,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_28_222500) do
   end
 
   create_table "groupinfos_users", id: false, charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
-    t.bigint "groupinfo_id", null: false
     t.bigint "user_id", null: false
-    t.index ["groupinfo_id", "user_id"], name: "index_groupinfos_users_on_groupinfo_id_and_user_id"
-    t.index ["user_id", "groupinfo_id"], name: "index_groupinfos_users_on_user_id_and_groupinfo_id"
+    t.bigint "groupinfo_id", null: false
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -58,8 +56,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_28_222500) do
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "bills", "commitments", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "bills", "users", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "commitments", "groupinfos", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "commitments", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "bills", "commitments"
+  add_foreign_key "bills", "users"
+  add_foreign_key "commitments", "groupinfos"
+  add_foreign_key "commitments", "users"
 end

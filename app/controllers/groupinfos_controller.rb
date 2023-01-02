@@ -24,6 +24,16 @@ class GroupinfosController < ApplicationController
     end
   end
 
+  def add_user
+    @group = Group.find(params[:id])
+    @user = User.find(params[:user_id])
+    if @group.users << @user
+      render json: @group, status: :ok
+    else
+      render json: @group.errors, status: :unprocessable_entity
+    end
+  end
+
   # PATCH/PUT /groupinfos/1
   def update
     if @groupinfo.update(groupinfo_params)
@@ -32,6 +42,8 @@ class GroupinfosController < ApplicationController
       render json: @groupinfo.errors, status: :unprocessable_entity
     end
   end
+
+
 
   # DELETE /groupinfos/1
   def destroy
