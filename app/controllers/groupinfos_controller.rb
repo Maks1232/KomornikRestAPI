@@ -24,6 +24,7 @@ class GroupinfosController < ApplicationController
     end
   end
 
+  # POST /groups/:id/users
   def add_user
     @group = Group.find(params[:id])
     @user = User.find(params[:user_id])
