@@ -24,15 +24,19 @@ class GroupinfosController < ApplicationController
     end
   end
 
-  # POST /groups/:id/users
+  # POST /groups/:id/users/user_id
   def add_user
-    @group = Group.find(params[:id])
+    @groupinfo = Groupinfo.find(params[:id])
     @user = User.find(params[:user_id])
-    if @group.users << @user
-      render json: @group, status: :ok
-    else
-      render json: @group.errors, status: :unprocessable_entity
-    end
+      if @user.nil?
+        render json: { error: 'User not found' }, status: :not_found
+        else
+        if @groupinfo.users << @user
+          render json: @groupinfo, status: :ok
+        else
+          render json: @groupinfo.errors, status: :unprocessable_entity
+        end
+      end
   end
 
   # PATCH/PUT /groupinfos/1
