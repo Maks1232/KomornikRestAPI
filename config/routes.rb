@@ -20,6 +20,10 @@ Rails.application.routes.draw do
 
   # Usuwanie użytkownika o danym ID z grupy o danym ID
   delete '/groupinfos/:id/users', to: 'groupinfos#remove_user'
+
+
+  # Tworzenie nowego zobowiązania dla grupy o danym ID i użytkowników o danych ID
+  post '/groupinfos/:group_id/commitments', to: 'commitments#create'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")

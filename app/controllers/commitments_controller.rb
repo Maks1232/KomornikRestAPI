@@ -15,10 +15,15 @@ class CommitmentsController < ApplicationController
 
   # POST /commitments
   def create
-    @commitment = Commitment.new(commitment_params)
-
+    @groupinfo = Groupinfo.find(params[:group_id])
+    @users = User.where(id: params[:user_ids])
+    @commitment = @groupinfo.commitments.new(commitmentdesc: params[:commitmentdesc],
+                                             commitmentamount: params[:commitmentamount],
+                                             occurancedate: params[:occurancedate],
+                                             expirationdate: params[:expirationdate])
+    @commitment.users = @users
     if @commitment.save
-      render json: @commitment, status: :created, location: @commitment
+      render json: @commitment, status: :ok
     else
       render json: @commitment.errors, status: :unprocessable_entity
     end
