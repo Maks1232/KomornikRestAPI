@@ -64,11 +64,14 @@ class GroupinfosController < ApplicationController
     end
   end
 
-
-
   # DELETE /groupinfos/1
   def destroy
-    @groupinfo.destroy
+    @groupinfo = Groupinfo.find(params[:id])
+    if @groupinfo.destroy
+      render json: { message: 'Group deleted!' }, status: :ok
+    else
+      render json: @groupinfo.errors, status: :unprocessable_entity
+    end
   end
 
   private

@@ -9,6 +9,12 @@ Rails.application.routes.draw do
 
   # Tworzenie nowej grupy
   post '/groupinfos', to: 'groupinfos#create'
+
+  # Usuwanie grupy o danym ID
+  delete '/groupinfos/:id', to: 'groupinfos#destroy'
+
+
+
   # Dodawanie użytkownika do grupy o danym ID
   post '/groupinfos/:id/users', to: 'groupinfos#add_user'
 
