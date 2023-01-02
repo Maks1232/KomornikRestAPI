@@ -10,8 +10,10 @@ Rails.application.routes.draw do
   # Tworzenie nowej grupy
   post '/groupinfos', to: 'groupinfos#create'
   # Dodawanie użytkownika do grupy o danym ID
-  post '/groupinfos/:id/users/:user_id', to: 'groupinfos#add_user'
+  post '/groupinfos/:id/users', to: 'groupinfos#add_user'
 
+  # Usuwanie użytkownika o danym ID z grupy o danym ID
+  delete '/groupinfos/:id/users', to: 'groupinfos#remove_user'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")

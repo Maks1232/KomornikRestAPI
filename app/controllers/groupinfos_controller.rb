@@ -24,19 +24,35 @@ class GroupinfosController < ApplicationController
     end
   end
 
-  # POST /groups/:id/users/user_id
+  # POST /groups/:id/users
   def add_user
     @groupinfo = Groupinfo.find(params[:id])
-    @user = User.find(params[:user_id])
+    user_id = JSON.parse(request.body.read)['user_id']
+    @user = User.find_by(id: user_id)
       if @user.nil?
         render json: { error: 'User not found' }, status: :not_found
         else
         if @groupinfo.users << @user
-          render json: @groupinfo, status: :ok
+          render json: "Przypisano użytkownika do grupy", status: :ok
         else
           render json: @groupinfo.errors, status: :unprocessable_entity
         end
       end
+  end
+  # remove /groups/:id/users
+  def remove_user
+    @groupinfo = Groupinfo.find(params[:id])
+    user_id = JSON.parse(request.body.read)['user_id']
+    @user = User.find_by(id: user_id)
+    if @user.nil?
+      render json: { error: 'User not found' }, status: :not_found
+    else
+      if @groupinfo.users.delete( @user )
+        render json: "Usunięto użytkownika z grupy", status: :ok
+      else
+        render json: @groupinfo.errors, status: :unprocessable_entity
+      end
+    end
   end
 
   # PATCH/PUT /groupinfos/1
