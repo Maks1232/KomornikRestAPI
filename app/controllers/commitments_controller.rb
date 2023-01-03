@@ -31,6 +31,11 @@ class CommitmentsController < ApplicationController
 
   # PATCH/PUT /commitments/1
   def update
+    commitment_id = JSON.parse(request.body.read)['commitment_id']
+    @commitment = Commitment.find_by(id: commitment_id)
+
+    #@commitment = Commitment.find(params[:commitment_id])
+
     if @commitment.update(commitment_params)
       render json: @commitment
     else
@@ -40,10 +45,36 @@ class CommitmentsController < ApplicationController
 
   # DELETE /commitments/1
   def destroy
-    @commitment.destroy
+    set_commitment
+    if @commitment.destroy
+      render json: { message: 'Commitment deleted!' }, status: :ok
+    else
+      render json: @commitment.errors, status: :unprocessable_entity
+    end
+
   end
 
-  private
+  def split
+    # Pobierz zobowiązanie o podanym identyfikatorze
+    commitment = Commitment.find(params[:id])
+
+    # Pobierz tablicę z identyfikatorami użytkowników i kwotami rachunków z ciała żądania
+    bills_params = params[:bills]
+
+    # Iteruj przez tablicę debts_params i twórz nowe rachunki dla każdego użytkownika
+    bills_params.each do |bills_params|
+      user_id = bills_params[:user_id]
+      amount = bills_params[:amount]
+
+      # Utwórz nowy rachunek dla użytkownika o podanym identyfikatorze i kwocie
+      bill = Bill.create(commitment: commitment, user_id: user_id, amount: amount)
+    end
+
+    # Zwróć odpowiedź z listą utworzonych rachunków
+    render json: commitment.bills, status: :ok
+  end
+
+      private
     # Use callbacks to share common setup or constraints between actions.
     def set_commitment
       @commitment = Commitment.find(params[:id])

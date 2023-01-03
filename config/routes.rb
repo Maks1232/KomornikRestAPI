@@ -6,6 +6,8 @@ Rails.application.routes.draw do
 
   post "/login", to: "users#login"
 
+  #-----------------------------------------------------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------------------------------------------------
 
   # Tworzenie nowej grupy
   post '/groupinfos', to: 'groupinfos#create'
@@ -13,7 +15,8 @@ Rails.application.routes.draw do
   # Usuwanie grupy o danym ID
   delete '/groupinfos/:id', to: 'groupinfos#destroy'
 
-
+  #-----------------------------------------------------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------------------------------------------------
 
   # Dodawanie użytkownika do grupy o danym ID
   post '/groupinfos/:id/users', to: 'groupinfos#add_user'
@@ -21,11 +24,22 @@ Rails.application.routes.draw do
   # Usuwanie użytkownika o danym ID z grupy o danym ID
   delete '/groupinfos/:id/users', to: 'groupinfos#remove_user'
 
+  #-----------------------------------------------------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------------------------------------------------
 
   # Tworzenie nowego zobowiązania dla grupy o danym ID i użytkowników o danych ID
   post '/groupinfos/:group_id/commitments', to: 'commitments#create'
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Defines the root path route ("/")
-  # root "articles#index"
+  # Usuwanie zobowiązania dla grupy o danym ID
+  delete '/groupinfos/:group_id/commitments/:id', to: 'commitments#destroy'
+
+  # Aktualizacja istniejącego commitment dla grupy o danym ID
+  patch '/groupinfos/:group_id/commitments/:id' , to: 'commitments#update'
+
+  #-----------------------------------------------------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------------------------------------------------
+
+  post '/groupinfos/:group_id/commitments/:id' , to: 'commitments#split'
+
+
 end
