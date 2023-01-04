@@ -64,8 +64,6 @@ class CommitmentsController < ApplicationController
       end
     end
 
-
-
   # PATCH/PUT /commitments/1
   def update
     commitment_id = JSON.parse(request.body.read)['commitment_id']
@@ -95,32 +93,36 @@ class CommitmentsController < ApplicationController
     # Pobierz identyfikator zobowiązania z ciała żądania
     commitment_id = JSON.parse(request.body.read)['commitment_id']
     if commitment_id.nil?
-      render json: { error: "Missing commitment_id parameter" }, status: :bad_request
+      render json: { error: "Nie podano o jaki numer zobowiązania chodzi!" }, status: :bad_request
       return
     end
 
     # Pobierz obiekt zobowiązania o podanym identyfikatorze
     @commitment = Commitment.find_by(id: commitment_id)
     if @commitment.nil?
-      render json: { error: "Commitment with id #{commitment_id} not found" }, status: :not_found
+      render json: { error: "Zobowiązanie o numerze id #{commitment_id} nie zostało odnalezione!" }, status: :not_found
       return
     end
-
+    if Bill.exists?(commitment_id: commitment_id)
+      # Return an error if bills already exist for this commitment
+      render json: { error: "Rachunek dla tego zobowiązania został już rozdzielony!" }, status: :unprocessable_entity
+    else
     # Pobierz tablicę z identyfikatorami użytkowników i kwotami rachunków z ciała żądania
     bills_params = params[:bills]
+
 
     # Iteruj przez tablicę bills_params i twórz nowe rachunki dla każdego użytkownika
     bills = []
     amount_sum = 0
-    bills_params.each do |bills_params|
-      user_id = bills_params[:user_id]
-      amount = bills_params[:amount]
+    bills_params.each do |bills_paramsy|
+      user_id = bills_paramsy[:user_id]
+      amount = bills_paramsy[:amount]
 
       # Utwórz nowy rachunek dla użytkownika o podanym identyfikatorze i kwocie
-      bill = Bill.new(user_id: user_id, amount: amount)
+      bill = Bill.new(user_id: user_id, amount: amount, commitment_id: commitment_id)
       bills << bill
       amount_sum += bill.amount
-    end
+      end
 
     # Sprawdź, czy suma rachunków jest równa wartości zobowiązania
     if amount_sum == @commitment.commitmentamount
@@ -132,9 +134,11 @@ class CommitmentsController < ApplicationController
       render json: bills, status: :ok
     else
       # Jeśli suma rachunków nie jest równa wartości zobowiązania, zwróć błąd
-      render json: { error: "Total amount of bills must be equal to commitment amount" }, status: :unprocessable_entity
+      render json: { error: "Suma wartości wszystkich rachunków musi być równa wartości zobowiązania!" }, status: :unprocessable_entity
+    end
     end
   end
+
 
       private
     # Use callbacks to share common setup or constraints between actions.
