@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_02_200252) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_04_160731) do
   create_table "bills", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.decimal "amount", precision: 10
     t.datetime "created_at", null: false
@@ -30,14 +30,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_02_200252) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "groupinfo_id", null: false
+    t.bigint "user_id", null: false
     t.index ["groupinfo_id"], name: "index_commitments_on_groupinfo_id"
-  end
-
-  create_table "commitments_users", id: false, charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
-    t.bigint "commitment_id"
-    t.bigint "user_id"
-    t.index ["commitment_id"], name: "index_commitments_users_on_commitment_id"
-    t.index ["user_id"], name: "index_commitments_users_on_user_id"
+    t.index ["user_id"], name: "index_commitments_on_user_id"
   end
 
   create_table "groupinfos", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -64,4 +59,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_02_200252) do
   add_foreign_key "bills", "commitments"
   add_foreign_key "bills", "users"
   add_foreign_key "commitments", "groupinfos"
+  add_foreign_key "commitments", "users"
 end

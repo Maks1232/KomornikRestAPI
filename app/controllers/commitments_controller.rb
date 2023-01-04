@@ -14,20 +14,57 @@ class CommitmentsController < ApplicationController
   end
 
   # POST /commitments
-  def create
-    @groupinfo = Groupinfo.find(params[:group_id])
-    @users = User.where(id: params[:user_ids])
-    @commitment = @groupinfo.commitments.new(commitmentdesc: params[:commitmentdesc],
-                                             commitmentamount: params[:commitmentamount],
-                                             occurancedate: params[:occurancedate],
-                                             expirationdate: params[:expirationdate])
-    @commitment.users = @users
-    if @commitment.save
-      render json: @commitment, status: :ok
-    else
-      render json: @commitment.errors, status: :unprocessable_entity
+    def create
+      # Pobierz identyfikator grupy z ciała żądania
+      group_id = params[:group_id]
+      if group_id.nil?
+        render json: { error: "Missing group_id parameter" }, status: :bad_request
+        return
+      end
+
+      user_id = params[:user_id]
+      if user_id.nil?
+        render json: { error: "Missing user_id parameter" }, status: :bad_request
+        return
+      end
+
+      # Pobierz obiekt grupy o podanym identyfikatorze
+      @groupinfo = Groupinfo.find_by(id: group_id)
+      if @groupinfo.nil?
+        render json: { error: "Group with given id not found" }, status: :not_found
+        return
+      end
+
+      @user = User.find_by(id: user_id)
+      if @user.nil?
+        render json: { error: "User with given id not found" }, status: :not_found
+        return
+      end
+
+      # Pobierz pozostałe parametry z ciała żądania
+
+      commitmentamount = JSON.parse(request.body.read)['commitmentamount']
+      commitmentdesc = JSON.parse(request.body.read)['commitmentdesc']
+      occurancedate = JSON.parse(request.body.read)['occurancedate']
+      expirationdate = JSON.parse(request.body.read)['expirationdate']
+
+      # Utwórz nowe zobowiązanie z podanymi parametrami i dodaj je do grupy
+      @commitment = Commitment.new(commitmentdesc: commitmentdesc,
+                                   commitmentamount: commitmentamount,
+                                   occurancedate: occurancedate,
+                                   expirationdate: expirationdate,
+                                   groupinfo_id: @groupinfo.id,
+                                   user_id: @user.id)
+      if @commitment.save
+        # Jeśli zapis się powiódł, zwróć odpowiedź z nowym zobowiązaniem
+        render json: @commitment, status: :created
+      else
+        # Jeśli zapis się nie powiódł, zwróć błąd
+        render json: @commitment.errors, status: :unprocessable_entity
+      end
     end
-  end
+
+
 
   # PATCH/PUT /commitments/1
   def update

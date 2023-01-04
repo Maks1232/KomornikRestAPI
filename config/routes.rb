@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resources :commitments
-  resources :groupinfos
+  resources :groupinfos do
+    resources :commitments
+  end
   resources :bills
   resources :users
 
