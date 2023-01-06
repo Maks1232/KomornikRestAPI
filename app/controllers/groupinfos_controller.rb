@@ -1,4 +1,5 @@
 class GroupinfosController < ApplicationController
+  before_action :authentication
   before_action :set_groupinfo, only: %i[ show update destroy ]
 
   # GET /groupinfos

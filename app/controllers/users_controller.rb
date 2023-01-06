@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  before_action :authentication, except: [:create, :login]
   before_action :set_user, only: %i[ show update destroy ]
 
   # GET /users
@@ -18,8 +19,8 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
 
     if @user.save
-      token = encode_token({ user_id: @user.id })
-      render json: { user: @user, token: token}, status: :created
+      token = encode_user_data({ user_id: @user.id })
+      render json: { user: @user, token: token }, status: :created
     else
       render json: { error: 'Invalid username or password or mail' }, status: :unprocessable_entity
     end
@@ -29,7 +30,7 @@ class UsersController < ApplicationController
     @user = User.find_by(login: user_params[:login])
 
     if @user && @user.authenticate(user_params[:password])
-      token = encode_token({ user_id: @user.id })
+      token = encode_user_data({ user_id: @user.id })
       render json: { user: @user, token: token }, status: :ok
     else
       render json: { error: 'Invalid username or password or mail' }, status: :unprocessable_entity

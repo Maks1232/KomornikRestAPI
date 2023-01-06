@@ -1,4 +1,5 @@
 class BillsController < ApplicationController
+  before_action :authentication
   before_action :set_bill, only: %i[ show update destroy ]
 
   # GET /bills

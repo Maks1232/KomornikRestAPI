@@ -1,4 +1,5 @@
 class CommitmentsController < ApplicationController
+  before_action :authentication
   before_action :set_commitment, only: %i[ show update destroy ]
 
   # GET /commitments
