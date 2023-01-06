@@ -21,7 +21,7 @@ class CommitmentsController < ApplicationController
         render json: { error: "Missing group_id parameter" }, status: :bad_request
         return
       end
-
+      # Pobierz identyfikator użytkownika wystawiającego zobowiązanie z ciała żądania
       user_id = params[:user_id]
       if user_id.nil?
         render json: { error: "Missing user_id parameter" }, status: :bad_request
@@ -66,12 +66,45 @@ class CommitmentsController < ApplicationController
 
   # PATCH/PUT /commitments/1
   def update
-    commitment_id = JSON.parse(request.body.read)['commitment_id']
-    @commitment = Commitment.find_by(id: commitment_id)
+    # Pobierz identyfikator grupy z ciała żądania
+    group_id = params[:group_id]
+    if group_id.nil?
+      render json: { error: "Missing group_id parameter" }, status: :bad_request
+      return
+    end
+    # Pobierz identyfikator użytkownika wystawiającego zobowiązanie z ciała żądania
+    user_id = params[:user_id]
+    if user_id.nil?
+      render json: { error: "Missing user_id parameter" }, status: :bad_request
+      return
+    end
 
-    #@commitment = Commitment.find(params[:commitment_id])
+    # Pobierz obiekt grupy o podanym identyfikatorze
+    @groupinfo = Groupinfo.find_by(id: group_id)
+    if @groupinfo.nil?
+      render json: { error: "Group with given id not found" }, status: :not_found
+      return
+    end
 
-    if @commitment.update(commitment_params)
+    @user = User.find_by(id: user_id)
+    if @user.nil?
+      render json: { error: "User with given id not found" }, status: :not_found
+      return
+    end
+
+    # Pobierz pozostałe parametry z ciała żądania
+
+    commitmentamount = JSON.parse(request.body.read)['commitmentamount']
+    commitmentdesc = JSON.parse(request.body.read)['commitmentdesc']
+    occurancedate = JSON.parse(request.body.read)['occurancedate']
+    expirationdate = JSON.parse(request.body.read)['expirationdate']
+
+    if @commitment.update(commitmentdesc: commitmentdesc,
+                          commitmentamount: commitmentamount,
+                          occurancedate: occurancedate,
+                          expirationdate: expirationdate,
+                          groupinfo_id: @groupinfo.id,
+                          user_id: @user.id)
       render json: @commitment
     else
       render json: @commitment.errors, status: :unprocessable_entity
@@ -80,8 +113,14 @@ class CommitmentsController < ApplicationController
 
   # DELETE /commitments/1
   def destroy
-    set_commitment
-    if @commitment.destroy
+    # Pobierz identyfikator grupy z ciała żądania
+    group_id = JSON.parse(request.body.read)['group_id']
+    if group_id.nil?
+      render json: { error: "Missing group_id parameter" }, status: :bad_request
+      return
+    end
+    if Groupinfo.exists?(id: group_id)
+      @commitment.destroy
       render json: { message: 'Commitment deleted!' }, status: :ok
     else
       render json: @commitment.errors, status: :unprocessable_entity
@@ -103,11 +142,15 @@ class CommitmentsController < ApplicationController
       render json: { error: "Zobowiązanie o numerze id #{commitment_id} nie zostało odnalezione!" }, status: :not_found
       return
     end
+
     if Bill.exists?(commitment_id: commitment_id)
-      # Return an error if bills already exist for this commitment
+      # Zabezpieczenie żeby nie rozdzielać dwa razy tego samego zobowiązania
       render json: { error: "Rachunek dla tego zobowiązania został już rozdzielony!" }, status: :unprocessable_entity
     else
-    # Pobierz tablicę z identyfikatorami użytkowników i kwotami rachunków z ciała żądania
+      # Pobierz tablicę użytkowników należących do grupy zobowiązania
+      group_users = @commitment.groupinfo.users
+
+      # Pobierz tablicę z identyfikatorami użytkowników i kwotami rachunków z ciała żądania
     bills_params = params[:bills]
 
 
@@ -118,6 +161,11 @@ class CommitmentsController < ApplicationController
       user_id = bills_paramsy[:user_id]
       amount = bills_paramsy[:amount]
 
+      if !group_users.include?(User.find_by(id: user_id))
+        # Jeśli użytkownik nie należy do grupy, zwróć błąd
+        render json: { error: "Użytkownik o id #{user_id} nie należy do grupy zobowiązania!" }, status: :unprocessable_entity
+        return
+      end
       # Utwórz nowy rachunek dla użytkownika o podanym identyfikatorze i kwocie
       bill = Bill.new(user_id: user_id, amount: amount, commitment_id: commitment_id)
       bills << bill
@@ -150,4 +198,5 @@ class CommitmentsController < ApplicationController
     def commitment_params
       params.require(:commitment).permit(:commitmentdesc, :commitmentamount, :occurancedate, :expirationdate)
     end
+
 end

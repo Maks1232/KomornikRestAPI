@@ -10,7 +10,6 @@ Rails.application.routes.draw do
 
   #-----------------------------------------------------------------------------------------------------------------------
   #-----------------------------------------------------------------------------------------------------------------------
-
   # Tworzenie nowej grupy
   post '/groupinfos', to: 'groupinfos#create'
 
@@ -19,7 +18,6 @@ Rails.application.routes.draw do
 
   #-----------------------------------------------------------------------------------------------------------------------
   #-----------------------------------------------------------------------------------------------------------------------
-
   # Dodawanie użytkownika do grupy o danym ID
   post '/groupinfos/:id/users', to: 'groupinfos#add_user'
 
@@ -28,19 +26,18 @@ Rails.application.routes.draw do
 
   #-----------------------------------------------------------------------------------------------------------------------
   #-----------------------------------------------------------------------------------------------------------------------
-
   # Tworzenie nowego zobowiązania dla grupy o danym ID i użytkowników o danych ID
   post '/groupinfos/:group_id/commitments', to: 'commitments#create'
 
   # Usuwanie zobowiązania dla grupy o danym ID
-  delete '/groupinfos/:group_id/commitments/:id', to: 'commitments#destroy'
+  delete '/commitments/:id', to: 'commitments#destroy'
 
   # Aktualizacja istniejącego commitment dla grupy o danym ID
   patch '/groupinfos/:group_id/commitments/:id' , to: 'commitments#update'
 
   #-----------------------------------------------------------------------------------------------------------------------
   #-----------------------------------------------------------------------------------------------------------------------
-
+  # Podział zobowiązania na rachunki
   post '/commitments/split' , to: 'commitments#split'
 
 
