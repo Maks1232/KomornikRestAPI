@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   resources :groupinfos do
     resources :commitments
   end
-  resources :bills
+  resources :bills, only: [:show, :update, :edit]
   resources :users
 
   post "/login", to: "users#login"
@@ -27,7 +27,7 @@ Rails.application.routes.draw do
   #-----------------------------------------------------------------------------------------------------------------------
   #-----------------------------------------------------------------------------------------------------------------------
   # Tworzenie nowego zobowiązania dla grupy o danym ID i użytkowników o danych ID
-  post '/groupinfos/:group_id/commitments', to: 'commitments#create'
+  post '/commitments', to: 'commitments#create'
 
   # Usuwanie zobowiązania dla grupy o danym ID
   delete '/commitments/:id', to: 'commitments#destroy'
@@ -35,10 +35,12 @@ Rails.application.routes.draw do
   # Aktualizacja istniejącego commitment dla grupy o danym ID
   patch '/groupinfos/:group_id/commitments/:id' , to: 'commitments#update'
 
-  #-----------------------------------------------------------------------------------------------------------------------
-  #-----------------------------------------------------------------------------------------------------------------------
   # Podział zobowiązania na rachunki
   post '/commitments/split' , to: 'commitments#split'
 
+  #-----------------------------------------------------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------------------------------------------------
+  # Aktualizacja rachunku
+  patch '/bills/:id' , to:'bills#update'
 
 end

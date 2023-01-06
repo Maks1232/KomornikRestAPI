@@ -26,10 +26,23 @@ class BillsController < ApplicationController
 
   # PATCH/PUT /bills/1
   def update
+
+    # Pobierz obiekt rachunku o podanym identyfikatorze
+    @bill = Bill.find(params[:id])
+
+    # Sprawdź, czy rachunek został znaleziony
+    if @bill.nil?
+      render json: { error: "Rachunek o podanym identyfikatorze nie został odnaleziony" }, status: :not_found
+      return
+    end
+
+    # Aktualizuj obiekt rachunku na podstawie parametrów przesłanych w żądaniu
     if @bill.update(bill_params)
-      render json: @bill
+      # Jeśli aktualizacja się powiodła, zwróć odpowiedź z aktualizowanym obiektem rachunku
+      render json: @bill, status: :ok
     else
-      render json: @bill.errors, status: :unprocessable_entity
+      # Jeśli aktualizacja się nie powiodła, zwróć błąd
+      render json: { error: "Nie udało się zaktualizować rachunku" }, status: :unprocessable_entity
     end
   end
 
@@ -37,6 +50,7 @@ class BillsController < ApplicationController
   def destroy
     @bill.destroy
   end
+
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -46,6 +60,6 @@ class BillsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def bill_params
-      params.require(:bill).permit(:amount, :ispaid)
+      params.require(:bill).permit(:amount, :ispaid, :commitment_id, :user_id)
     end
 end
