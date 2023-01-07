@@ -42,5 +42,7 @@ Rails.application.routes.draw do
   #-----------------------------------------------------------------------------------------------------------------------
   # Aktualizacja rachunku
   patch '/bills/:id' , to:'bills#update'
+  # Odczyt rachunków
+  get "/bills", to:"bills#index"
 
 end
