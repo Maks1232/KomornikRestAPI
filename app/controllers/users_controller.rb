@@ -39,20 +39,23 @@ class UsersController < ApplicationController
 
   # PATCH/PUT /users/1
   def update
-    if @user.update(user_params)
+    @user = User.find(params[:id])
+    if @current_user == @user
+      @user.update(user_params)
       render json: @user
     else
-      render json: @user.errors, status: :unprocessable_entity
+      render json: { message: 'Wrong token passed! You can update only your own account.' }, status: :unprocessable_entity
     end
   end
 
   # DELETE /users/1
   def destroy
     @user = User.find(params[:id])
-    if @user.destroy
+    if @current_user == @user
+      @user.destroy
       render json: { message: 'User deleted!' }, status: :ok
     else
-      render json: @user.errors, status: :unprocessable_entity
+      render json: { message: 'Wrong token passed! You can delete only your own account.' }, status: :unprocessable_entity
     end
   end
 
