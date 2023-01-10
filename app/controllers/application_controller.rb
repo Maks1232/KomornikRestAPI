@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-  SECRET = "dupa"
+  SECRET = "jolka"
 
   def authentication
     # making a request to a secure route, token must be included in the headers
